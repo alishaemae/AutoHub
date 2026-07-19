@@ -40,8 +40,9 @@ button{font-family:inherit;cursor:pointer}input,select{font-family:inherit}
 
 #login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
 .login-card{width:380px;max-width:100%;background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden}
-.login-logo{background:var(--red);padding:22px;text-align:center;font-family:var(--fs);font-style:italic;font-weight:600;color:#fff;font-size:28px}
-.login-logo small{display:block;font-family:var(--f);font-style:normal;font-weight:600;font-size:12px;letter-spacing:.16em;text-transform:uppercase;margin-top:4px;opacity:.85}
+.login-logo{background:var(--red);padding:16px 22px;text-align:center}
+.login-logo img{height:66px;width:auto;display:block;margin:0 auto}
+.login-logo small{display:block;font-family:var(--f);font-style:normal;font-weight:600;font-size:12px;letter-spacing:.16em;text-transform:uppercase;margin-top:6px;opacity:.85;color:#fff}
 .login-body{padding:28px}.login-body h1{font-size:18px;margin-bottom:22px}
 .field{margin-bottom:16px}
 .field label{display:block;font-size:12.5px;color:var(--text-2);font-weight:600;margin-bottom:7px}
@@ -59,9 +60,9 @@ button{font-family:inherit;cursor:pointer}input,select{font-family:inherit}
 
 .app{display:grid;grid-template-columns:248px 1fr;min-height:100vh}
 .sidebar{background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
-.logo{background:var(--red);padding:18px;text-align:center}
-.logo .wm{font-family:var(--fs);font-style:italic;font-weight:600;color:#fff;font-size:24px}
-.logo .role{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.85);margin-top:2px}
+.logo{background:var(--red);padding:14px 18px;text-align:center}
+.logo .wm img{height:50px;width:auto;display:block;margin:0 auto}
+.logo .role{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.85);margin-top:4px}
 .rates{padding:14px 16px;border-bottom:1px solid var(--line)}
 .rates .h{margin-bottom:9px}
 .rates .r{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
@@ -221,7 +222,7 @@ select.status{background:var(--panel);border:1px solid var(--line-2);border-radi
 
 <div id="login">
   <div class="login-card">
-    <div class="login-logo">AVTO-hub<small>Панель менеджера</small></div>
+    <div class="login-logo"><img src="logo.png" alt="AVTO-hub"><small>Панель менеджера</small></div>
     <div class="login-body">
       <h1>Вход для сотрудников</h1>
       <div class="field"><label>Email</label><input id="li-email" type="email" placeholder="admin@avto-hub.ru"></div>
@@ -234,7 +235,7 @@ select.status{background:var(--panel);border:1px solid var(--line-2);border-radi
 
 <div class="app hidden" id="app">
   <aside class="sidebar">
-    <div class="logo"><a href="https://avto-hub.online" target="_blank" rel="noopener" style="text-decoration:none;color:inherit" title="На главную страницу сайта"><div class="wm">AVTO-hub</div></a><div class="role">Панель менеджера</div></div>
+    <div class="logo"><a href="https://avto-hub.online" target="_blank" rel="noopener" style="text-decoration:none;color:inherit" title="На главную страницу сайта"><div class="wm"><img src="logo.png" alt="AVTO-hub"></div></a><div class="role">Панель менеджера</div></div>
     <div class="rates"><div class="h eyebrow">Курсы валют</div><div id="rates"><div class="k" style="color:var(--text-3)">—</div></div></div>
     <nav class="nav" id="nav">
       <button data-view="clients" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/></svg>Клиенты</button>
