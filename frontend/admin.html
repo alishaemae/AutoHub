@@ -1,0 +1,1101 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="https://avto-hub.online/favicon.ico">
+<link rel="shortcut icon" href="https://avto-hub.online/favicon.ico">
+<link rel="apple-touch-icon" href="https://avto-hub.online/favicon.ico">
+<title>AVTO-hub — панель менеджера</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Spectral:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap&subset=cyrillic,cyrillic-ext,latin" rel="stylesheet">
+<style>
+:root{
+  --bg:#5d5d5d;--panel:#2b2c31;--surface:#23242a;--surface-2:#2f3037;
+  --line:rgba(255,255,255,.09);--line-2:rgba(255,255,255,.15);
+  --text:#e9edf3;--text-2:#aab2c0;--text-3:#8a91a0;
+  --hover:#373945;
+  --red:#c63e45;--red-2:#e07a80;--red-soft:rgba(198,62,69,.22);
+  --green:#86cda3;--green-soft:rgba(116,193,148,.18);
+  --amber:#e7b774;--amber-soft:rgba(224,168,87,.18);
+  --f:'Manrope',system-ui,sans-serif;--fs:'Spectral',Georgia,serif;--fm:'JetBrains Mono',monospace;
+  --cw:1280px;
+}
+[data-theme="light"]{
+  --bg:#e8eaee;--panel:#ffffff;--surface:#ffffff;--surface-2:#f3f5f8;
+  --line:#e6e8ec;--line-2:#d7dbe1;
+  --text:#1f2530;--text-2:#5b6472;--text-3:#8a92a0;
+  --hover:#eef0f4;
+  --red:#c63e45;--red-2:#b23239;--red-soft:rgba(198,62,69,.10);
+  --green:#3f8f5f;--green-soft:rgba(63,143,95,.12);
+  --amber:#a9761f;--amber-soft:rgba(224,168,87,.16);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);font-family:var(--f);color:var(--text);font-size:15px;line-height:1.5}
+button{font-family:inherit;cursor:pointer}input,select{font-family:inherit}
+:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+.hidden{display:none!important}.mono{font-family:var(--fm)}
+.eyebrow{font-family:var(--fm);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-3)}
+
+#login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.login-card{width:380px;max-width:100%;background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.login-logo{background:var(--red);padding:22px;text-align:center;font-family:var(--fs);font-style:italic;font-weight:600;color:#fff;font-size:28px}
+.login-logo small{display:block;font-family:var(--f);font-style:normal;font-weight:600;font-size:12px;letter-spacing:.16em;text-transform:uppercase;margin-top:4px;opacity:.85}
+.login-body{padding:28px}.login-body h1{font-size:18px;margin-bottom:22px}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:12.5px;color:var(--text-2);font-weight:600;margin-bottom:7px}
+.field .hint{font-size:11.5px;color:var(--text-3);margin-top:5px;line-height:1.35}
+.field .ferr{font-size:11.5px;color:var(--red-2);margin-top:5px;min-height:0;display:none}
+.field.invalid .ferr{display:block}
+.field.invalid input{border-color:var(--red)!important}
+.field input,.field select{width:100%;background:var(--panel);border:1px solid var(--line-2);border-radius:10px;padding:11px 13px;color:var(--text);font-size:14px}
+.field input:focus,.field select:focus{outline:none;border-color:var(--red)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:10px;padding:11px 16px;font-size:14px;font-weight:600;border:1px solid var(--line-2);background:var(--surface-2);color:var(--text);transition:.15s}
+.btn:hover{background:var(--hover)}.btn.red{background:var(--red);border:0;color:#fff}.btn.red:hover{background:#d4555b}
+.btn.full{width:100%}.btn.sm{padding:8px 12px;font-size:13px}.btn svg{width:16px;height:16px}
+.err{color:#ff9a9a;font-size:13px;margin-top:10px;min-height:18px}
+.login-hint{margin-top:18px;padding-top:16px;border-top:1px solid var(--line);font-size:11.5px;color:var(--text-3);line-height:1.7}
+
+.app{display:grid;grid-template-columns:248px 1fr;min-height:100vh}
+.sidebar{background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
+.logo{background:var(--red);padding:18px;text-align:center}
+.logo .wm{font-family:var(--fs);font-style:italic;font-weight:600;color:#fff;font-size:24px}
+.logo .role{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.85);margin-top:2px}
+.rates{padding:14px 16px;border-bottom:1px solid var(--line)}
+.rates .h{margin-bottom:9px}
+.rates .r{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.rates .r:last-child{margin-bottom:0}
+.rates .c{font-size:12.5px;color:var(--text-2)}.rates .v{font-family:var(--fm);font-size:13px}
+.nav{padding:12px;display:flex;flex-direction:column;gap:3px}
+.nav button{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:transparent;border:0;color:var(--text-2);padding:11px 13px;border-radius:10px;font-size:14px;font-weight:500}
+.nav button svg{width:19px;height:19px}.nav button:hover{background:var(--surface);color:var(--text)}
+.nav button.active{background:var(--red-soft);color:var(--red-2)}
+.who{margin-top:auto;display:flex;align-items:center;gap:11px;padding:14px;border-top:1px solid var(--line)}
+.who>div:not(.ava):not(.out){flex:1;min-width:0}
+.who .nm,.who .rl{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.who .ava{width:36px;height:36px;border-radius:50%;background:linear-gradient(150deg,var(--red),#8f2b30);display:grid;place-items:center;color:#fff;font-weight:700;font-size:13px;flex:none}
+.who .nm{font-weight:600;font-size:13px}.who .rl{font-size:11px;color:var(--text-3)}
+.who .out{margin-left:auto;background:transparent;border:0;color:var(--text-3)}.who .out:hover{color:var(--red-2)}.who .out svg{width:18px;height:18px}
+
+.main{display:flex;flex-direction:column;min-width:0}
+.topbar{display:flex;padding:0;border-bottom:1px solid var(--line);background:var(--panel);position:sticky;top:0;z-index:10}
+.topbar-inner{display:flex;align-items:center;gap:14px;width:100%;max-width:var(--cw);margin:0 auto;padding:18px 30px}
+.topbar h1{font-size:20px;font-weight:700}
+.topbar .back{background:transparent;border:1px solid var(--line-2);border-radius:9px;padding:7px 12px;color:var(--text-2);font-size:13px;font-weight:600;display:none;align-items:center;gap:7px}
+.topbar .back svg{width:15px;height:15px}
+.content{padding:24px 30px 60px;max-width:var(--cw);width:100%;margin:0 auto}
+.icon-btn{width:38px;height:38px;border-radius:10px;border:1px solid var(--line-2);background:var(--surface-2);color:var(--text-2);display:grid;place-items:center;transition:.15s;margin-left:auto}
+.topbar-inner>div .icon-btn{margin-left:0}
+.icon-btn:hover{background:var(--hover);color:var(--text)}
+.icon-btn svg{width:18px;height:18px}
+.view{display:none}.view.show{display:block;animation:rise .35s ease}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px}
+.card+.card{margin-top:18px}
+.sec-head{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+.sec-head h2{font-size:16px;font-weight:700}.sec-head .btn{margin-left:auto}
+.loading{padding:36px;text-align:center;color:var(--text-3)}
+.rcpt-row{display:flex;gap:10px;align-items:center;justify-content:space-between;font-size:13px;color:var(--green);padding:6px 0;border-bottom:1px solid var(--line)}
+.rcpt-item{display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.rcpt-tag{font-size:11.5px;font-weight:600;padding:4px 10px;border-radius:20px;white-space:nowrap}
+.rcpt-meta{flex:1;min-width:120px}
+.rcpt-name{font-size:13px;color:var(--text)}
+.rcpt-btns{display:flex;gap:8px;flex-wrap:wrap}
+.notif-badge{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;padding:0 4px;background:var(--red);color:#fff;font-size:11px;font-weight:700;border-radius:9px;display:flex;align-items:center;justify-content:center}
+.notif-panel{position:absolute;top:46px;right:0;width:340px;max-width:88vw;background:var(--panel);border:1px solid var(--line-2);border-radius:14px;box-shadow:0 16px 50px rgba(0,0,0,.55);z-index:200;overflow:hidden}
+.notif-head{padding:14px 16px;border-bottom:1px solid var(--line);font-weight:600;display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--panel)}
+.notif-head .htxt{display:flex;flex-direction:column;gap:2px}
+.notif-clear{font-size:12px;color:var(--text-3);cursor:pointer;background:none;border:none;padding:4px 6px;border-radius:6px}
+.notif-clear:hover{color:var(--red-2);background:var(--surface)}
+.notif-sub{font-size:11px;color:var(--text-3);font-weight:400;text-transform:none;letter-spacing:0}
+#notif-list{max-height:60vh;overflow-y:auto}
+.notif-item{padding:12px 16px;border-bottom:1px solid var(--line);cursor:pointer;display:flex;gap:10px;align-items:flex-start}
+.notif-item:hover{background:var(--surface)}
+.notif-item.new{background:rgba(198,62,69,.08)}
+.notif-dot{width:8px;height:8px;border-radius:50%;background:var(--red);margin-top:5px;flex:0 0 auto}
+.notif-dot.seen{background:transparent}
+.notif-body{flex:1;min-width:0}
+.notif-name{font-size:13.5px;font-weight:600}
+.notif-meta{font-size:12px;color:var(--text-2);margin-top:2px}
+.notif-time{font-size:11px;color:var(--text-3);margin-top:2px}
+.mob-logout{display:none}
+.rcpt-preview{margin-top:8px}
+#modal:has(.rcpt-preview){max-width:640px;width:calc(100% - 40px)}
+@media (max-width:860px){.mob-logout{display:grid;place-items:center}}
+.burger{display:none}
+.sb-overlay{display:none}
+@media (max-width:860px){
+  .burger{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;flex:0 0 auto;background:var(--card);border:1px solid var(--line);border-radius:10px;color:var(--text);cursor:pointer}
+  .burger svg{width:22px;height:22px}
+  .app{grid-template-columns:1fr}
+  .sidebar{position:fixed;top:0;left:0;z-index:60;width:82%;max-width:300px;height:100vh;transform:translateX(-105%);transition:transform .25s ease;box-shadow:0 0 40px rgba(0,0,0,.5);overflow-y:auto}
+  .sidebar.open{transform:translateX(0)}
+  .sb-overlay{display:block;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:55;opacity:0;pointer-events:none;transition:opacity .25s}
+  .sb-overlay.show{opacity:1;pointer-events:auto}
+  .main{width:100%}
+  .topbar-inner{padding:12px 14px !important;gap:10px}
+  .content{padding:14px !important}
+  .card{padding:14px !important}
+  h1{font-size:18px}
+  .content,.card{max-width:100%;overflow-x:hidden}
+  .card table,.card thead,.card tbody,.card tr,.card td{display:block;width:100%}
+  .card thead{display:none}
+  .card table tr{background:var(--surface,#1c1f25);border:1px solid var(--line);border-radius:12px;margin-bottom:12px;padding:12px}
+  .card table td{border:0;padding:6px 0;display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+  .card table td[data-label]::before{content:attr(data-label);color:var(--text-3);font-size:11px;text-transform:uppercase;letter-spacing:.4px;flex:0 0 auto}
+  .card table td>*{max-width:70%;text-align:right}
+  .card table td .docs-cell{flex-wrap:wrap;justify-content:flex-end}
+  .card table .status{max-width:70%}
+  .ledger,.led-wrap{grid-template-columns:1fr !important}
+  .notif-panel{right:-40px}
+  .grid2{grid-template-columns:1fr !important}
+  .modal{width:calc(100% - 28px);max-width:440px}
+  .dq-grid,.deposit-grid{grid-template-columns:1fr !important}
+  img,svg{max-width:100%}
+  .head-actions{flex-wrap:wrap;gap:8px}
+}
+@media (max-width:430px){
+  h1{font-size:16px}
+  .content{padding:10px !important}
+}
+
+.client-row{display:flex;align-items:center;gap:14px;padding:14px;border:1px solid var(--line);border-radius:12px;background:var(--panel);cursor:pointer;transition:.15s}
+.client-row+.client-row{margin-top:10px}
+.client-row:hover{border-color:var(--red);background:var(--hover)}
+.client-row .ava{width:40px;height:40px;border-radius:50%;background:linear-gradient(150deg,var(--red),#8f2b30);display:grid;place-items:center;color:#fff;font-weight:700;flex:none}
+.client-row .nm{font-weight:700}.client-row .meta{font-size:12.5px;color:var(--text-3)}
+.client-row .go{margin-left:auto;color:var(--text-3)}.client-row .go svg{width:20px;height:20px}
+
+table{width:100%;border-collapse:collapse}
+thead th{font-family:var(--fm);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3);font-weight:500;text-align:left;padding:0 10px 12px}
+tbody td{padding:13px 10px;border-top:1px solid var(--line);vertical-align:middle}
+.cn{font-weight:700;font-size:14px}.k{font-family:var(--fm);font-size:12px;color:var(--text-2)}
+select.status{background:var(--panel);border:1px solid var(--line-2);border-radius:8px;padding:8px 10px;color:var(--text);font-size:12.5px;max-width:230px}
+.docs-cell{display:flex;gap:6px;flex-wrap:wrap}
+.docchip{display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:5px 9px;border-radius:8px;border:1px solid var(--line-2);background:var(--panel);color:var(--text-2);cursor:pointer}
+.rowact{display:inline-flex;gap:6px}
+.iact{width:30px;height:30px;border-radius:8px;border:1px solid var(--line-2);background:var(--panel);color:var(--text-2);display:grid;place-items:center;cursor:pointer;transition:.15s}
+.iact:hover{background:var(--hover);color:var(--text)}
+.iact.del:hover{border-color:var(--red);color:var(--red-2)}
+.iact svg{width:15px;height:15px}
+.head-actions{margin-left:auto;display:flex;gap:8px}
+.search-box{display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line-2);border-radius:12px;padding:11px 14px;margin-bottom:14px}
+.search-box svg{width:18px;height:18px;color:var(--text-3);flex:none}
+.search-box input{flex:1;background:transparent;border:0;outline:none;color:var(--text);font-size:14px}
+.search-box input::placeholder{color:var(--text-3)}
+.docchip.has{border-color:var(--green);color:var(--green)}
+.docchip svg{width:12px;height:12px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:end;margin-bottom:16px}
+.grid2 .field{margin-bottom:0}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.full{grid-column:1/-1}
+.bal-head{display:flex;align-items:baseline;gap:16px;margin-bottom:14px}
+.bal-head .num{font-family:var(--fs);font-size:30px;font-weight:600;color:var(--red-2);white-space:nowrap}
+.led{font-size:13px}.led td{padding:10px}.led .dt{font-family:var(--fm);font-size:11px;color:var(--text-3)}
+.led .am{font-family:var(--fm);text-align:right}.am.in{color:var(--green)}.am.out{color:var(--red-2)}
+.pill{display:inline-block;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px}
+.pill.in{background:var(--green-soft);color:var(--green)}.pill.out{background:var(--red-soft);color:var(--red-2)}
+
+.modal-ov{position:fixed;inset:0;background:rgba(10,10,14,.6);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
+.modal-ov.show{display:flex}
+.modal{background:var(--surface);border:1px solid var(--line-2);border-radius:16px;padding:24px;width:440px;max-width:100%;position:relative}
+.modal-x{position:absolute;top:14px;right:14px;width:32px;height:32px;border-radius:8px;border:1px solid var(--line-2);background:var(--panel);color:var(--text-3);display:grid;place-items:center;cursor:pointer}
+.modal-x:hover{color:var(--text);background:var(--hover)}
+.modal-x svg{width:16px;height:16px}
+.opis-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0;max-height:340px;overflow:auto}
+.opis-cell{position:relative;aspect-ratio:1;border-radius:9px;overflow:hidden;background:var(--panel);border:1px solid var(--line-2)}
+.opis-cell .ph-load{width:100%;height:100%;display:grid;place-items:center;color:var(--text-3);font-size:12px}
+.opis-cell img{display:block}
+.opis-del{position:absolute;top:4px;right:4px;width:22px;height:22px;border-radius:6px;border:0;background:rgba(0,0,0,.55);color:#fff;cursor:pointer;font-size:12px;line-height:1}
+.opis-del:hover{background:var(--red)}
+.sub2{font-size:12.5px;color:var(--text-2);margin:-6px 0 12px}
+.modal h3{font-size:17px;margin-bottom:18px}
+.modal-actions{display:flex;gap:10px;margin-top:20px}.modal-actions .btn{flex:1}
+
+.toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(20px);opacity:0;background:var(--surface-2);border:1px solid var(--line-2);color:var(--text);padding:13px 20px;border-radius:12px;font-size:13.5px;font-weight:600;z-index:200;transition:.3s;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%)}
+</style>
+</head>
+<body>
+
+<div id="login">
+  <div class="login-card">
+    <div class="login-logo">AVTO-hub<small>Панель менеджера</small></div>
+    <div class="login-body">
+      <h1>Вход для сотрудников</h1>
+      <div class="field"><label>Email</label><input id="li-email" type="email" placeholder="admin@avto-hub.ru"></div>
+      <div class="field"><label>Пароль</label><input id="li-pass" type="password" placeholder="••••••••"></div>
+      <button class="btn red full" id="li-btn">Войти</button>
+      <div class="err" id="li-err"></div>
+    </div>
+  </div>
+</div>
+
+<div class="app hidden" id="app">
+  <aside class="sidebar">
+    <div class="logo"><a href="https://avto-hub.online" target="_blank" rel="noopener" style="text-decoration:none;color:inherit" title="На главную страницу сайта"><div class="wm">AVTO-hub</div></a><div class="role">Панель менеджера</div></div>
+    <div class="rates"><div class="h eyebrow">Курсы валют</div><div id="rates"><div class="k" style="color:var(--text-3)">—</div></div></div>
+    <nav class="nav" id="nav">
+      <button data-view="clients" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/></svg>Клиенты</button>
+      <button data-view="currency"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 015 0c0 2-2.5 2-2.5 4"/><path d="M12 17h.01"/></svg>Курсы валют</button>
+      <button data-view="deposit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3M21 21v.01M17 21h.01M21 17h.01"/></svg>Депозит (QR)</button>
+    </nav>
+    <div class="who"><div class="ava" id="ava">М</div><div><div class="nm" id="me-name">—</div><div class="rl">Администратор</div></div>
+      <button class="out" id="logout" title="Выйти"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg></button>
+    </div>
+  </aside>
+
+  <div class="sb-overlay" id="sb-overlay" onclick="toggleSidebar(false)"></div>
+  <div class="main">
+    <header class="topbar"><div class="topbar-inner">
+      <button class="burger" id="burger" aria-label="Меню" onclick="toggleSidebar(true)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+      <button class="back" id="back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>К клиентам</button>
+      <h1 id="ptitle">Клиенты</h1>
+      <div style="margin-left:auto;display:flex;align-items:center;gap:10px;position:relative">
+        <button class="icon-btn" id="notif-btn" title="Уведомления" aria-label="Уведомления" style="position:relative">
+          <svg viewBox="0 0 24 24" width="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 00-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+          <span class="notif-badge" id="notif-badge" style="display:none">0</span>
+        </button>
+        <div class="notif-panel" id="notif-panel" style="display:none">
+          <div class="notif-head"><span class="htxt">Уведомления<span class="notif-sub">чек прикреплён клиентом</span></span><button class="notif-clear" id="notif-clear" title="Очистить">Очистить ✕</button></div>
+          <div id="notif-list"><div class="loading">Загрузка…</div></div>
+        </div>
+        <button class="icon-btn" id="theme-btn" title="Сменить тему" aria-label="Сменить тему"></button>
+        <button class="icon-btn mob-logout" id="logout-top" title="Выйти" aria-label="Выйти"><svg viewBox="0 0 24 24" width="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg></button>
+      </div>
+    </div></header>
+    <div class="content">
+      <section class="view show" data-view="clients">
+        <div class="sec-head" style="margin-bottom:16px"><h2 style="font-size:18px">Клиенты</h2>
+          <button class="btn red sm" id="add-client"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Создать клиента</button></div>
+        <div class="search-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+          <input id="client-search" placeholder="Поиск по имени, email или телефону"></div>
+        <div id="clients-wrap"><div class="loading">Загрузка…</div></div>
+      </section>
+      <section class="view" data-view="client"><div id="client-wrap"></div></section>
+      <section class="view" data-view="currency"><div id="currency-wrap"><div class="loading">Загрузка…</div></div></section>
+      <section class="view" data-view="deposit"><div id="deposit-wrap"><div class="loading">Загрузка…</div></div></section>
+    </div>
+  </div>
+</div>
+
+<div class="modal-ov" id="modal-ov"><div class="modal" id="modal"></div></div>
+<input type="file" id="file-input" accept="application/pdf" class="hidden">
+<div class="toast" id="toast"></div>
+
+<script>
+const API_BASE = location.protocol.startsWith("http") ? "" : "http://localhost:8000";
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+let token=localStorage.getItem("avtohub_admin_token")||"";
+
+const IDLE_LIMIT_MS=30*60*1000;
+function markActivity(){ try{ localStorage.setItem("avtohub_last_activity", Date.now()); }catch(e){} }
+function idleExceeded(){
+  const t=parseInt(localStorage.getItem("avtohub_last_activity")||"0",10);
+  return t>0 && (Date.now()-t)>IDLE_LIMIT_MS;
+}
+let _idleTimer=null;
+function startIdleWatch(){
+  ["click","keydown","touchstart","mousemove","scroll"].forEach(ev=>
+    window.addEventListener(ev,markActivity,{passive:true}));
+  if(_idleTimer)clearInterval(_idleTimer);
+  _idleTimer=setInterval(()=>{ if(idleExceeded()){ logout(); } },30000);
+}
+let ME=null, CUR_CLIENT=null, UPLOAD_CTX=null;
+
+const STATUSES=[
+  ["purchased","Куплен автомобиль"],["invoice_jp","Выставлен счёт по Японии"],
+  ["to_port","Доставка в порт"],["ship_assigned","Назначение судна"],
+  ["customs_invoice","Выставлен счёт за таможенную очистку"],["released","Растаможен и готов к выдаче"]];
+const DOCS=[["car_payment","Оплата авто"],["customs","Таможня"],["broker","Брокер"]];
+const fmt=n=>Number(n).toLocaleString("ru-RU")+" ₽";
+
+async function api(path,opts={}){
+  const h=opts.headers||{};
+  if(token)h["Authorization"]="Bearer "+token;
+  const r=await fetch(API_BASE+path,{...opts,headers:h});
+  if(r.status===401){logout();throw new Error("unauth");}
+  if(!r.ok){let m="Ошибка "+r.status;try{m=(await r.json()).detail||m;}catch(e){}throw new Error(m);}
+  return r.status===204?null:r.json();
+}
+async function downloadFile(path,name){
+  try{
+    const r=await fetch(API_BASE+path,{headers:token?{"Authorization":"Bearer "+token}:{}});
+    if(!r.ok)throw new Error("Ошибка "+r.status);
+    const u=URL.createObjectURL(await r.blob());
+    const a=document.createElement("a");a.href=u;a.download=name||"file";document.body.appendChild(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(u),5000);
+  }catch(e){toast("Не удалось скачать: "+e.message);}
+}
+
+async function doLogin(){
+  const email=$("#li-email").value.trim(),pass=$("#li-pass").value;
+  $("#li-err").textContent="";
+  try{
+    const r=await fetch(API_BASE+"/api/auth/login",{method:"POST",body:new URLSearchParams({username:email,password:pass})});
+    if(!r.ok){$("#li-err").textContent="Неверный email или пароль";return;}
+    token=(await r.json()).access_token;
+    localStorage.setItem("avtohub_admin_token",token); markActivity();
+    await boot();
+  }catch(e){$("#li-err").textContent="Сервер недоступен";}
+}
+function logout(){token="";localStorage.removeItem("avtohub_admin_token");localStorage.removeItem("avtohub_token");localStorage.removeItem("avtohub_last_activity");if(_idleTimer)clearInterval(_idleTimer);window.location.href="cabinet.html";}
+
+async function boot(){
+  if(idleExceeded()){ logout(); return; }
+  try{ME=await api("/api/auth/me");}catch(e){logout();return;}
+  if(ME.role!=="admin"){localStorage.removeItem("avtohub_admin_token");window.location.href="cabinet.html";return;}
+  $("#login").classList.add("hidden");$("#app").classList.remove("hidden");
+  markActivity(); startIdleWatch();
+  $("#me-name").textContent=ME.full_name||ME.email;
+  $("#ava").textContent=(ME.full_name||"М")[0];
+  loadClients(); loadRatesSidebar(); initNotifications();
+  const sv=localStorage.getItem("avtohub_admin_view");
+  const scid=localStorage.getItem("avtohub_admin_client");
+  if(sv==="client" && scid){ openClient(scid); }
+  else if(sv && sv!=="clients" && $(`#nav button[data-view="${sv}"]`)){ go(sv); }
+}
+
+let _notifPoll=null;
+async function loadNotifications(){
+  try{
+    const d=await api("/api/admin/notifications");
+    const badge=$("#notif-badge");
+    if(d.unseen>0){ badge.textContent=d.unseen>99?"99+":d.unseen; badge.style.display="flex"; }
+    else{ badge.style.display="none"; }
+    const list=$("#notif-list");
+    if(!d.items.length){ list.innerHTML='<div class="loading">Уведомлений пока нет</div>'; return; }
+    list.innerHTML=d.items.map(n=>{
+      const when=n.uploaded_at?new Date(n.uploaded_at).toLocaleString("ru-RU",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"}):"";
+      const carPart=n.car?` · ${n.car}`:"";
+      return `<div class="notif-item ${n.new?'new':''}" onclick="gotoClientFromNotif(${n.client_id})">
+        <span class="notif-dot ${n.new?'':'seen'}"></span>
+        <div class="notif-body">
+          <div class="notif-name">${n.client_name}</div>
+          <div class="notif-meta">Прикреплён чек: ${n.label}${carPart}</div>
+          <div class="notif-time">${when}</div>
+        </div></div>`;
+    }).join("");
+  }catch(e){}
+}
+function gotoClientFromNotif(clientId){
+  $("#notif-panel").style.display="none";
+  openClient(clientId);
+}
+async function initNotifications(){
+  await loadNotifications();
+  if(_notifPoll)clearInterval(_notifPoll);
+  _notifPoll=setInterval(loadNotifications,15000);
+  $("#notif-btn").addEventListener("click",async(e)=>{
+    e.stopPropagation();
+    const panel=$("#notif-panel");
+    const open=panel.style.display==="none";
+    panel.style.display=open?"block":"none";
+    if(open){
+      await loadNotifications();
+      try{ await api("/api/admin/notifications/seen",{method:"POST"}); }catch(e){}
+      setTimeout(loadNotifications,300);
+    }
+  });
+  document.addEventListener("click",(e)=>{
+    const p=$("#notif-panel");
+    if(p&&p.style.display!=="none"&&!e.target.closest("#notif-panel")&&!e.target.closest("#notif-btn")) p.style.display="none";
+  });
+  $("#notif-clear")&&$("#notif-clear").addEventListener("click",async(e)=>{
+    e.stopPropagation();
+    try{ await api("/api/admin/notifications/clear",{method:"POST"}); }catch(err){}
+    await loadNotifications();
+  });
+}
+
+async function loadRatesSidebar(){
+  try{
+    const rates=await api("/api/currency");
+    const names={JPY:"JPY · иена",EUR:"EUR · евро"};
+    $("#rates").innerHTML=rates.map(r=>`<div class="r"><span class="c">${names[r.code]||r.code}</span><span class="v">${Number(r.rate).toLocaleString("ru-RU",{minimumFractionDigits:2})} ₽</span></div>`).join("")||'<div class="k" style="color:var(--text-3)">—</div>';
+  }catch(e){}
+}
+
+function go(view){
+  $$("#nav button").forEach(b=>b.classList.toggle("active",b.dataset.view===view));
+  $$(".view").forEach(v=>v.classList.toggle("show",v.dataset.view===view));
+  $("#back").style.display=view==="client"?"inline-flex":"none";
+  $("#ptitle").textContent={clients:"Клиенты",client:"Карточка клиента",currency:"Курсы валют"}[view];
+  try{ if(view!=="client") localStorage.setItem("avtohub_admin_view", view); }catch(e){}
+  if(view==="currency")loadCurrency();
+  if(view==="deposit")loadDeposit();
+  if(view==="clients")loadClients();
+}
+function toggleSidebar(open){
+  const sb=$(".sidebar"), ov=$("#sb-overlay");
+  if(!sb)return;
+  sb.classList.toggle("open",open);
+  ov.classList.toggle("show",open);
+}
+$("#nav").addEventListener("click",e=>{const b=e.target.closest("button");if(b){go(b.dataset.view);toggleSidebar(false);}});
+$("#back").addEventListener("click",()=>go("clients"));
+document.addEventListener("click",e=>{if(e.target.closest("#add-client"))openAddClient();});
+document.addEventListener("input",e=>{if(e.target.id==="client-search")renderClients(e.target.value);});
+
+let CLIENTS=[];
+async function loadClients(){
+  try{
+    CLIENTS=await api("/api/admin/clients");
+    renderClients($("#client-search")?.value||"");
+  }catch(e){$("#clients-wrap").innerHTML='<div class="card"><div class="loading">'+e.message+'</div></div>';}
+}
+function renderClients(q){
+  q=(q||"").trim().toLowerCase();
+  const list=q?CLIENTS.filter(u=>((u.full_name||"")+" "+(u.email||"")+" "+(u.phone||"")).toLowerCase().includes(q)):CLIENTS;
+  if(!CLIENTS.length){ $("#clients-wrap").innerHTML='<div class="card"><div class="loading">Клиентов пока нет. Нажмите «Создать клиента».</div></div>'; return; }
+  if(!list.length){ $("#clients-wrap").innerHTML='<div class="card"><div class="loading">По запросу «'+q+'» ничего не найдено</div></div>'; return; }
+  $("#clients-wrap").innerHTML=list.map(u=>`
+    <div class="client-row" data-id="${u.id}">
+      <div class="ava">${(u.full_name||"К").split(" ").map(s=>s[0]).slice(0,2).join("")}</div>
+      <div><div class="nm">${u.full_name||u.email}</div><div class="meta">${u.email} · ${u.phone||"телефон не указан"}</div></div>
+      <span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></span>
+    </div>`).join("");
+  $$("#clients-wrap .client-row").forEach(r=>r.addEventListener("click",()=>openClient(r.dataset.id)));
+}
+
+async function openClient(id){
+  go("client");
+  try{ localStorage.setItem("avtohub_admin_view","client"); localStorage.setItem("avtohub_admin_client", String(id)); }catch(e){}
+  $("#client-wrap").innerHTML='<div class="card"><div class="loading">Загрузка…</div></div>';
+  try{ CUR_CLIENT=await api("/api/admin/clients/"+id); renderClient(); }
+  catch(e){ $("#client-wrap").innerHTML='<div class="card"><div class="loading">'+e.message+'</div></div>'; }
+}
+function renderClient(){
+  const d=CUR_CLIENT,u=d.user,b=d.balance;
+  const EDIT_IC='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg>';
+  const DEL_IC='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>';
+  const carsRows=d.cars.map(c=>{
+    const byType={};(c.docs||[]).forEach(x=>byType[x.doc_type]=x);
+    return `<tr class="carrow">
+      <td data-label="Автомобиль"><div class="cn">${c.make_model}</div><div class="k">${c.body_number} · ${c.year}</div></td>
+      <td data-label="Статус"><select class="status" data-car="${c.id}">
+        ${STATUSES.map(([v,l])=>`<option value="${v}" ${c.status===v?'selected':''}>${l}</option>`).join("")}
+      </select></td>
+      <td data-label="Документы"><div class="docs-cell">${DOCS.map(([t,l])=>{const has=byType[t];return `<span class="docchip ${has?'has':''}" data-car="${c.id}" data-type="${t}" data-docid="${has?has.id:''}" title="${has?'Загружено — открыть / заменить / удалить':'Не загружено — нажмите чтобы загрузить PDF'}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${has?'<path d="M20 6L9 17l-5-5"/>':'<path d="M12 5v14M5 12h14"/>'}</svg>${l}</span>`;}).join("")}</div></td>
+      <td data-label="Медиа"><div class="docs-cell">
+        <span class="docchip ${c.has_photo?'has':''}" data-media="photo" data-car="${c.id}" data-has="${c.has_photo?1:0}" title="${c.has_photo?'Фото загружено — открыть / заменить / удалить':'Фото авто не загружено'}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${c.has_photo?'<path d="M20 6L9 17l-5-5"/>':'<path d="M12 5v14M5 12h14"/>'}</svg>Фото</span>
+        <span class="docchip ${c.opis_count?'has':''}" onclick="openOpis(${c.id})" title="Фотоопись — управление фотографиями">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="11" r="2"/><path d="M21 15l-5-5-6 6"/></svg>Опись${c.opis_count?' · '+c.opis_count:''}</span>
+      </div></td>
+      <td data-label=""><div class="rowact">
+        <button class="iact" title="Изменить авто" onclick="editCar(${c.id})">${EDIT_IC}</button>
+        <button class="iact del" title="Удалить авто" onclick="delCar(${c.id})">${DEL_IC}</button>
+      </div></td>
+    </tr>`;}).join("");
+
+  const led=arr=>arr.length?arr.map(t=>`<tr><td class="dt">${(t.op_date||"").split("-").reverse().join(".")}</td>
+    <td><b>${t.name}</b><div class="k">${t.payer||""}</div></td>
+    <td class="am ${t.direction==='income'?'in':'out'}">${t.direction==='income'?'+':'−'}${Number(t.amount).toLocaleString("ru-RU")} ₽</td>
+    <td><div class="rowact">
+      <button class="iact" title="Изменить" onclick="editTx(${t.id})">${EDIT_IC}</button>
+      <button class="iact del" title="Удалить" onclick="delTx(${t.id})">${DEL_IC}</button></div></td></tr>`).join("")
+    :'<tr><td class="dt" colspan="4" style="color:var(--text-3)">Нет операций</td></tr>';
+
+  $("#client-wrap").innerHTML=`
+    <div class="card">
+      <div class="sec-head"><h2>${u.full_name||u.email}</h2>
+        <div class="head-actions">
+          <button class="btn sm" onclick="editClient()">Изменить</button>
+          <button class="btn sm" onclick="resetPass()">Сбросить пароль</button>
+          <button class="btn sm" onclick="delClient()" style="border-color:var(--line-2)"><span style="color:var(--red-2)">Удалить</span></button>
+        </div></div>
+      <div class="k" style="color:var(--text-2)">${u.email} · ${u.phone||"телефон не указан"}</div>
+    </div>
+    <div class="card">
+      <div class="sec-head"><h2>Автомобили</h2><button class="btn red sm" id="add-car"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Добавить авто</button></div>
+      ${d.cars.length?`<table><thead><tr><th>Автомобиль</th><th>Статус (меняется здесь)</th><th>Документы (PDF)</th><th>Медиа</th><th></th></tr></thead><tbody>${carsRows}</tbody></table>`:'<div class="loading">Авто пока не добавлены</div>'}
+    </div>
+    <div class="card">
+      <div class="sec-head"><h2>Чеки об оплате</h2></div>
+      <div id="all-receipts"><div class="loading">Загрузка…</div></div>
+    </div>
+    <div class="card">
+      <div class="sec-head"><h2>Баланс</h2>
+        <div class="head-actions">
+          <button class="btn sm" id="export-bal">Выписка (Excel)</button>
+          <button class="btn red sm" id="add-tx"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Добавить операцию</button>
+        </div></div>
+      <div class="bal-head"><span class="eyebrow">Доступно</span><span class="num">${fmt(b.balance)}</span>
+        <span class="k" style="color:var(--green)">+${Number(b.income_total).toLocaleString("ru-RU")}</span>
+        <span class="k" style="color:var(--red-2)">−${Number(b.expense_total).toLocaleString("ru-RU")}</span></div>
+      <div class="grid2">
+        <table class="led"><thead><tr><th>Дата</th><th>Поступление · плательщик</th><th style="text-align:right">Сумма</th><th></th></tr></thead><tbody>${led(b.income)}</tbody></table>
+        <table class="led"><thead><tr><th>Дата</th><th>Списание · плательщик</th><th style="text-align:right">Сумма</th><th></th></tr></thead><tbody>${led(b.expense)}</tbody></table>
+      </div>
+    </div>`;
+
+  $$("#client-wrap select.status").forEach(s=>s.addEventListener("change",async()=>{
+    try{ const car=await api(`/api/admin/cars/${s.dataset.car}/status`,{method:"PATCH",
+        headers:{"Content-Type":"application/json"},body:JSON.stringify({status:s.value})});
+      if(car.email_sent===true) toast("Статус обновлён · письмо клиенту отправлено");
+      else if(car.email_sent===false) toast("Статус обновлён · письмо НЕ отправлено (проверьте почту)");
+      else toast("Статус обновлён");
+    }catch(e){toast(e.message);}
+  }));
+  $$("#client-wrap .docchip[data-type]").forEach(ch=>ch.addEventListener("click",()=>{
+    const carId=ch.dataset.car, type=ch.dataset.type, docId=ch.dataset.docid;
+    if(docId){ openDocManage(carId,type,docId); }
+    else{ UPLOAD_CTX={mode:"doc",car:carId,type};const fi=$("#file-input");fi.accept="application/pdf";fi.click(); }
+  }));
+  $$("#client-wrap .docchip[data-media='photo']").forEach(ch=>ch.addEventListener("click",()=>{
+    const carId=ch.dataset.car, has=ch.dataset.has==="1";
+    if(has){ openPhotoManage(carId); }
+    else{ UPLOAD_CTX={mode:"photo",car:carId};const fi=$("#file-input");fi.accept="image/*";fi.click(); }
+  }));
+  $("#add-car").addEventListener("click",()=>openAddCar(u.id));
+  $("#add-tx").addEventListener("click",()=>openAddTx(u.id));
+  $("#export-bal").addEventListener("click",()=>downloadFile(`/api/balance/export?user_id=${u.id}`,`выписка-${u.full_name||u.id}.xlsx`));
+  loadAllReceipts(u.id);
+}
+
+const RCPT_COLORS={"Депозит":"#c63e45","Оплата за авто":"#3ba55d","Таможня":"#d9a441","Брокер":"#5b8def"};
+async function loadAllReceipts(userId){
+  const box=$("#all-receipts"); if(!box)return;
+  try{
+    const list=await api(`/api/admin/clients/${userId}/receipts`);
+    if(!list.length){ box.innerHTML='<div class="loading">Клиент пока не загрузил чеки об оплате</div>'; return; }
+    box.innerHTML=list.map(r=>{
+      const color=RCPT_COLORS[r.label]||"#888";
+      const sub=r.car?` · ${r.car}`:"";
+      const u=encodeURIComponent(r.url), fn=encodeURIComponent(r.filename||"чек");
+      return `<div class="rcpt-item">
+        <span class="rcpt-tag" style="background:${color}22;color:${color};border:1px solid ${color}55">${r.label}</span>
+        <div class="rcpt-meta"><div class="rcpt-name">${r.filename||"чек"}${sub}</div></div>
+        <div class="rcpt-btns">
+          <button class="btn sm" onclick="previewReceipt('${u}')">Просмотр</button>
+          <button class="btn sm" onclick="downloadReceipt('${u}','${fn}')">Скачать</button>
+        </div></div>`;
+    }).join("");
+  }catch(e){ box.innerHTML='<div class="loading">'+e.message+'</div>'; }
+}
+let _pdfjsLoading=null;
+function loadPdfJs(){
+  if(window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
+  if(_pdfjsLoading) return _pdfjsLoading;
+  _pdfjsLoading=new Promise((res,rej)=>{
+    const s=document.createElement("script");
+    s.src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
+    s.onload=()=>{ try{ window.pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"; res(window.pdfjsLib); }catch(e){ rej(e); } };
+    s.onerror=()=>rej(new Error("pdfjs load failed"));
+    document.head.appendChild(s);
+  });
+  return _pdfjsLoading;
+}
+async function previewReceipt(urlEnc){
+  const url=decodeURIComponent(urlEnc);
+  try{
+    const r=await fetch(API_BASE+url,{headers:{"Authorization":"Bearer "+token}});
+    if(!r.ok){ toast(r.status===404?"Чек не найден":"Ошибка "+r.status); return; }
+    const ctype=(r.headers.get("content-type")||"").toLowerCase();
+    const isImage=ctype.startsWith("image/");
+    const ab=await r.arrayBuffer();
+    const blob=new Blob([ab],{type:isImage?ctype:"application/pdf"});
+    const u=URL.createObjectURL(blob);
+    const dl=`<div style="margin-top:12px;text-align:center"><a class="btn" href="${u}" download="чек">Скачать чек</a></div>`;
+    if(isImage){
+      modal(`<h3>Чек об оплате</h3><div class="rcpt-preview"><img src="${u}" alt="Чек" style="max-width:100%;max-height:70vh;display:block;margin:0 auto;border-radius:10px">${dl}</div>`);
+      setTimeout(()=>URL.revokeObjectURL(u),120000); return;
+    }
+    modal(`<h3>Чек об оплате</h3><div class="rcpt-preview"><div id="pdf-pages" style="max-height:70vh;overflow:auto;text-align:center"><div class="loading">Загрузка…</div></div>${dl}</div>`);
+    try{
+      const pdfjs=await loadPdfJs();
+      const pdf=await pdfjs.getDocument({data:ab.slice(0)}).promise;
+      const box=$("#pdf-pages"); box.innerHTML="";
+      for(let n=1;n<=pdf.numPages;n++){
+        const page=await pdf.getPage(n);
+        const vp=page.getViewport({scale:1.5});
+        const cv=document.createElement("canvas");
+        cv.width=vp.width; cv.height=vp.height;
+        cv.style.cssText="max-width:100%;height:auto;border-radius:8px;margin-bottom:10px;display:block";
+        box.appendChild(cv);
+        await page.render({canvasContext:cv.getContext("2d"),viewport:vp}).promise;
+      }
+    }catch(err){
+      const box=$("#pdf-pages");
+      if(box) box.innerHTML=`<iframe src="${u}" style="width:100%;height:66vh;border:0;border-radius:10px;background:#fff"></iframe>`;
+    }
+    setTimeout(()=>URL.revokeObjectURL(u),180000);
+  }catch(e){ toast("Не удалось открыть чек"); }
+}
+async function downloadReceipt(urlEnc,fnEnc){
+  const url=decodeURIComponent(urlEnc), fn=decodeURIComponent(fnEnc);
+  try{
+    const r=await fetch(API_BASE+url,{headers:{"Authorization":"Bearer "+token}});
+    if(!r.ok){ toast(r.status===404?"Чек не найден":"Ошибка "+r.status); return; }
+    const blob=await r.blob(); const u=URL.createObjectURL(blob);
+    const a=document.createElement("a"); a.href=u; a.download=fn; a.click();
+    setTimeout(()=>URL.revokeObjectURL(u),4000);
+  }catch(e){ toast("Не удалось скачать чек"); }
+}
+
+async function openFileAdmin(path, filename){
+  try{
+    const r=await fetch(API_BASE+path,{headers:{"Authorization":"Bearer "+token}});
+    if(!r.ok){ toast("Ошибка "+r.status); return; }
+    const ctype=(r.headers.get("content-type")||"").toLowerCase();
+    const isImage=ctype.startsWith("image/");
+    const ab=await r.arrayBuffer();
+    const blob=new Blob([ab],{type:isImage?ctype:"application/pdf"});
+    const u=URL.createObjectURL(blob);
+    const dl=`<div style="margin-top:12px;text-align:center"><a class="btn" href="${u}" download="${filename||'документ.pdf'}">Скачать документ</a></div>`;
+    if(isImage){
+      modal(`<h3>${filename||'Документ'}</h3><div class="rcpt-preview"><img src="${u}" alt="Чек" style="max-width:100%;max-height:70vh;display:block;margin:0 auto;border-radius:10px">${dl}</div>`);
+      setTimeout(()=>URL.revokeObjectURL(u),120000); return;
+    }
+    modal(`<h3>${filename||'Документ'}</h3><div class="rcpt-preview"><div id="pdf-pages" style="max-height:70vh;overflow:auto;text-align:center"><div class="loading">Загрузка…</div></div>${dl}</div>`);
+    try{
+      const pdfjs=await loadPdfJs();
+      const pdf=await pdfjs.getDocument({data:ab.slice(0)}).promise;
+      const box=$("#pdf-pages"); box.innerHTML="";
+      for(let n=1;n<=pdf.numPages;n++){
+        const page=await pdf.getPage(n);
+        const vp=page.getViewport({scale:1.5});
+        const cv=document.createElement("canvas");
+        cv.width=vp.width; cv.height=vp.height;
+        cv.style.cssText="max-width:100%;height:auto;border-radius:8px;margin-bottom:10px;display:block";
+        box.appendChild(cv);
+        await page.render({canvasContext:cv.getContext("2d"),viewport:vp}).promise;
+      }
+    }catch(err){
+      const box=$("#pdf-pages");
+      if(box) box.innerHTML=`<iframe src="${u}" style="width:100%;height:66vh;border:0;border-radius:10px;background:#fff"></iframe>`;
+    }
+    setTimeout(()=>URL.revokeObjectURL(u),180000);
+  }catch(e){toast("Не удалось открыть: "+e.message);}
+}
+
+const DOC_LABEL={car_payment:"Оплата авто",customs:"Таможенные платежи",broker:"Комплекс брокера"};
+function openDocManage(carId,type,docId){
+  modal(`<h3>${DOC_LABEL[type]||"Документ"}</h3>
+    <div class="sub2">PDF прикреплён. Можно открыть, заменить или удалить. Чек об оплате загружает клиент.</div>
+    <div class="modal-actions" style="flex-wrap:wrap">
+      <button class="btn" onclick="openFileAdmin('/api/documents/${docId}/download','${DOC_LABEL[type]||'документ'}.pdf')">Открыть PDF</button>
+      <button class="btn" id="dm-receipt">Скачать чек клиента</button>
+      <button class="btn" id="dm-replace">Заменить</button>
+      <button class="btn red" id="dm-del">Удалить</button>
+    </div>`);
+  $("#dm-receipt").addEventListener("click",async()=>{
+    try{
+      const r=await fetch(API_BASE+`/api/car-documents/${docId}/receipt`,{headers:{"Authorization":"Bearer "+token}});
+      if(r.status===404){ toast("Клиент ещё не загрузил чек"); return; }
+      if(!r.ok){ toast("Ошибка "+r.status); return; }
+      const blob=await r.blob(); const u=URL.createObjectURL(blob);
+      const a=document.createElement("a"); a.href=u; a.download="чек-клиента"; a.click();
+      setTimeout(()=>URL.revokeObjectURL(u),4000);
+    }catch(e){ toast("Не удалось скачать чек"); }
+  });
+  $("#dm-replace").addEventListener("click",()=>{
+    UPLOAD_CTX={mode:"doc",car:carId,type};const fi=$("#file-input");fi.accept="application/pdf";fi.click();closeModal();
+  });
+  $("#dm-del").addEventListener("click",async()=>{
+    try{ await api(`/api/admin/cars/${carId}/documents/${docId}`,{method:"DELETE"}); closeModal();toast("Документ удалён");openClient(CUR_CLIENT.user.id); }
+    catch(e){toast(e.message);}
+  });
+}
+
+async function openPhotoManage(carId){
+  modal(`<h3>Фото автомобиля</h3>
+    <div id="pm-preview" style="margin:6px 0 14px;border-radius:10px;overflow:hidden;background:var(--panel);min-height:120px;display:grid;place-items:center;color:var(--text-3)">загрузка…</div>
+    <div class="modal-actions">
+      <button class="btn" id="pm-replace">Заменить</button>
+      <button class="btn red" id="pm-del">Удалить</button>
+    </div>`);
+  try{const u=await authBlobURLAdmin(`/api/cars/${carId}/photo`);$("#pm-preview").innerHTML=`<img src="${u}" style="width:100%;display:block">`;}
+  catch(e){$("#pm-preview").textContent="не удалось загрузить фото";}
+  $("#pm-replace").addEventListener("click",()=>{
+    UPLOAD_CTX={mode:"photo",car:carId};const fi=$("#file-input");fi.accept="image/*";fi.click();closeModal();
+  });
+  $("#pm-del").addEventListener("click",async()=>{
+    try{ await api(`/api/admin/cars/${carId}/photo`,{method:"DELETE"}); closeModal();toast("Фото удалено");openClient(CUR_CLIENT.user.id); }
+    catch(e){toast(e.message);}
+  });
+}
+
+$("#file-input").addEventListener("change",async e=>{
+  const f=e.target.files[0];e.target.value="";
+  if(!f||!UPLOAD_CTX)return;
+  const fd=new FormData();fd.append("file",f);
+  let url,msg;
+  if(UPLOAD_CTX.mode==="doc"){fd.append("doc_type",UPLOAD_CTX.type);url=`/api/admin/cars/${UPLOAD_CTX.car}/documents`;msg="PDF загружен";}
+  else{url=`/api/admin/cars/${UPLOAD_CTX.car}/photo`;msg="Фото авто загружено";}
+  try{ await api(url,{method:"POST",body:fd}); toast(msg); openClient(CUR_CLIENT.user.id); }
+  catch(err){toast(err.message);}
+});
+
+async function openOpis(carId){
+  modal(`<h3>Фотоопись автомобиля</h3>
+    <div class="sub2">Загрузите фотографии (можно выбрать сразу несколько). Клиент увидит их сеткой и сможет скачать архивом.</div>
+    <div id="opis-grid" class="opis-grid"><div class="loading">Загрузка…</div></div>
+    <input id="opis-input" type="file" accept="image/*" multiple style="display:none">
+    <input id="opis-zip" type="file" accept=".zip" style="display:none">
+    <div class="modal-actions" style="flex-wrap:wrap"><button class="btn" onclick="closeModal();openClient(CUR_CLIENT.user.id)">Закрыть</button>
+      <button class="btn" id="opis-zip-btn">Загрузить ZIP</button>
+      <button class="btn red" id="opis-add">Добавить фото</button></div>`);
+  $("#opis-add").addEventListener("click",()=>$("#opis-input").click());
+  $("#opis-zip-btn").addEventListener("click",()=>$("#opis-zip").click());
+  $("#opis-input").addEventListener("change",async e=>{
+    const files=[...e.target.files]; e.target.value="";
+    if(!files.length)return;
+    const fd=new FormData(); files.forEach(f=>fd.append("files",f));
+    try{ await api(`/api/admin/cars/${carId}/opis`,{method:"POST",body:fd}); toast("Фото добавлены"); renderOpisGrid(carId); }
+    catch(err){toast(err.message);}
+  });
+  $("#opis-zip").addEventListener("change",async e=>{
+    const f=e.target.files[0]; e.target.value="";
+    if(!f)return;
+    const fd=new FormData(); fd.append("file",f);
+    try{ await api(`/api/admin/cars/${carId}/opis/zip`,{method:"POST",body:fd}); toast("Архив распакован, фото добавлены"); renderOpisGrid(carId); }
+    catch(err){toast(err.message);}
+  });
+  renderOpisGrid(carId);
+}
+async function renderOpisGrid(carId){
+  try{
+    const photos=await api(`/api/cars/${carId}/opis`);
+    const grid=$("#opis-grid");
+    if(!photos.length){ grid.innerHTML='<div class="k" style="color:var(--text-3);padding:8px 0">Фотографий пока нет</div>'; }
+    else{
+      grid.innerHTML=photos.map(p=>`<div class="opis-cell" data-id="${p.id}"><div class="ph-load">…</div>
+        <button class="opis-del" title="Удалить" onclick="delOpis(${carId},${p.id})">✕</button></div>`).join("");
+      for(const p of photos){
+        try{const u=await authBlobURLAdmin(`/api/cars/${carId}/opis/${p.id}`);
+          const cell=grid.querySelector(`.opis-cell[data-id="${p.id}"] .ph-load`);
+          if(cell){cell.outerHTML=`<img src="${u}" style="width:100%;height:100%;object-fit:cover">`;}
+        }catch(e){}
+      }
+    }
+  }catch(e){$("#opis-grid").innerHTML='<div class="k">'+e.message+'</div>';}
+}
+async function authBlobURLAdmin(path){
+  const r=await fetch(API_BASE+path,{headers:token?{"Authorization":"Bearer "+token}:{}});
+  if(!r.ok)throw new Error("Ошибка "+r.status);
+  return URL.createObjectURL(await r.blob());
+}
+async function delOpis(carId,photoId){
+  try{ await api(`/api/admin/cars/${carId}/opis/${photoId}`,{method:"DELETE"}); renderOpisGrid(carId); }
+  catch(e){toast(e.message);}
+}
+
+function modal(html){
+  $("#modal").innerHTML='<button class="modal-x" onclick="closeModal()" title="Закрыть" aria-label="Закрыть"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>'+html;
+  $("#modal-ov").classList.add("show");
+}
+function closeModal(){$("#modal-ov").classList.remove("show");}
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal();});
+
+function findCar(id){return CUR_CLIENT.cars.find(c=>c.id===id);}
+function findTx(id){return [...CUR_CLIENT.balance.income,...CUR_CLIENT.balance.expense].find(t=>t.id===id);}
+
+function editClient(){
+  const u=CUR_CLIENT.user;
+  modal(`<h3>Изменить клиента</h3>
+    <div class="field"><label>ФИО</label><input id="ec-fio" value="${u.full_name||''}"></div>
+    <div class="grid2">
+      <div class="field"><label>Телефон</label><input id="ec-phone" value="${u.phone||''}"></div>
+      <div class="field"><label>Email</label><input id="ec-email" type="email" value="${u.email||''}"></div>
+    </div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal()">Отмена</button>
+      <button class="btn red" id="ec-save">Сохранить</button></div>`);
+  $("#ec-save").addEventListener("click",async()=>{
+    try{ await api(`/api/admin/clients/${u.id}`,{method:"PATCH",headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({full_name:$("#ec-fio").value,phone:$("#ec-phone").value,email:$("#ec-email").value})});
+      closeModal();toast("Данные клиента обновлены");openClient(u.id);
+    }catch(e){toast(e.message);}
+  });
+}
+
+function resetPass(){
+  const u=CUR_CLIENT.user;
+  modal(`<h3>Сбросить пароль</h3>
+    <div class="k" style="color:var(--text-2);margin-bottom:14px">Новый пароль для входа клиента ${u.full_name||u.email}. Передайте его клиенту.</div>
+    <div class="field"><label>Новый пароль</label>
+      <div style="display:flex;gap:8px"><input id="rp-pass" placeholder="сгенерируйте или впишите">
+        <button class="btn sm" type="button" id="rp-gen" style="flex:none">Сгенерировать</button></div></div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal()">Отмена</button>
+      <button class="btn red" id="rp-save">Сбросить</button></div>`);
+  $("#rp-pass").value=genPassword();
+  $("#rp-gen").addEventListener("click",()=>{$("#rp-pass").value=genPassword();});
+  $("#rp-save").addEventListener("click",async()=>{
+    const p=$("#rp-pass").value;
+    if(p.length<6){toast("Пароль не короче 6 символов");return;}
+    try{ await api(`/api/admin/clients/${u.id}/password`,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({password:p})});
+      closeModal();toast("Пароль сброшен на: "+p);
+    }catch(e){toast(e.message);}
+  });
+}
+
+function delClient(){
+  const u=CUR_CLIENT.user;
+  modal(`<h3>Удалить клиента?</h3>
+    <div class="k" style="color:var(--text-2);margin-bottom:6px">${u.full_name||u.email} · ${u.phone||''}</div>
+    <div class="k" style="color:var(--red-2)">Удалятся ВСЕ его авто, документы (договора/возвраты) и операции баланса. Действие необратимо.</div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal()">Отмена</button>
+      <button class="btn red" id="dc-save">Удалить клиента</button></div>`);
+  $("#dc-save").addEventListener("click",async()=>{
+    try{ await api(`/api/admin/clients/${u.id}`,{method:"DELETE"}); closeModal();toast("Клиент удалён");go("clients");}
+    catch(e){toast(e.message);}
+  });
+}
+
+function editCar(id){
+  const c=findCar(id);
+  modal(`<h3>Изменить автомобиль</h3>
+    <div class="field"><label>Марка и модель</label><input id="ec2-mm" value="${c.make_model}"></div>
+    <div class="grid2">
+      <div class="field"><label>Год</label><input id="ec2-year" type="number" value="${c.year}"></div>
+      <div class="field"><label>Дата покупки</label><input id="ec2-date" type="date" value="${c.purchase_date}"></div>
+    </div>
+    <div class="field"><label>Номер кузова</label><input id="ec2-body" value="${c.body_number}"></div>
+    <div class="grid2">
+      <div class="field"><label>Судно</label><input id="ec2-ship" value="${c.ship_name||''}"></div>
+      <div class="field"><label>Дата прихода в порт Владивостока</label><input id="ec2-arrival" placeholder="напр.: 25.07.2026" value="${c.ship_arrival_date||''}"></div>
+    </div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal()">Отмена</button>
+      <button class="btn red" id="ec2-save">Сохранить</button></div>`);
+  $("#ec2-save").addEventListener("click",async()=>{
+    try{ await api(`/api/admin/cars/${id}`,{method:"PATCH",headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({make_model:$("#ec2-mm").value,year:+$("#ec2-year").value,body_number:$("#ec2-body").value,purchase_date:$("#ec2-date").value,ship_name:$("#ec2-ship").value,ship_arrival_date:$("#ec2-arrival").value})});
+      closeModal();toast("Автомобиль обновлён");openClient(CUR_CLIENT.user.id);
+    }catch(e){toast(e.message);}
+  });
+}
+
+function delCar(id){
+  const c=findCar(id);
+  modal(`<h3>Удалить автомобиль?</h3>
+    <div class="k" style="color:var(--text-2);margin-bottom:6px">${c.make_model} · ${c.body_number}</div>
+    <div class="k" style="color:var(--red-2)">Действие необратимо. Документы и история этого авто тоже удалятся.</div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal()">Отмена</button>
+      <button class="btn red" id="del-save">Удалить</button></div>`);
+  $("#del-save").addEventListener("click",async()=>{
+    try{ await api(`/api/admin/cars/${id}`,{method:"DELETE"}); closeModal();toast("Автомобиль удалён");openClient(CUR_CLIENT.user.id);}
+    catch(e){toast(e.message);}
+  });
+}
+
+function editTx(id){
+  const t=findTx(id);
+  modal(`<h3>Изменить операцию</h3>
+    <div class="field"><label>Тип</label><select id="et-dir">
+      <option value="income" ${t.direction==='income'?'selected':''}>Поступление</option>
+      <option value="expense" ${t.direction==='expense'?'selected':''}>Списание</option></select></div>
+    <div class="field"><label>Наименование</label><input id="et-name" value="${t.name}"></div>
+    <div class="grid2">
+      <div class="field"><label>Плательщик</label><input id="et-payer" value="${t.payer||''}"></div>
+      <div class="field"><label>Сумма, ₽</label><input id="et-amt" type="number" value="${t.amount}"></div>
+    </div>
+    <div class="field"><label>Дата</label><input id="et-date" type="date" value="${t.op_date}"></div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal()">Отмена</button>
+      <button class="btn red" id="et-save">Сохранить</button></div>`);
+  $("#et-save").addEventListener("click",async()=>{
+    try{ await api(`/api/admin/transactions/${id}`,{method:"PATCH",headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({op_date:$("#et-date").value,name:$("#et-name").value,payer:$("#et-payer").value,amount:$("#et-amt").value,direction:$("#et-dir").value})});
+      closeModal();toast("Операция обновлена");openClient(CUR_CLIENT.user.id);
+    }catch(e){toast(e.message);}
+  });
+}
+
+function delTx(id){
+  const t=findTx(id);
+  modal(`<h3>Удалить операцию?</h3>
+    <div class="k" style="color:var(--text-2);margin-bottom:6px">${t.name} · ${Number(t.amount).toLocaleString("ru-RU")} ₽</div>
+    <div class="k" style="color:var(--red-2)">Действие необратимо.</div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal()">Отмена</button>
+      <button class="btn red" id="delt-save">Удалить</button></div>`);
+  $("#delt-save").addEventListener("click",async()=>{
+    try{ await api(`/api/admin/transactions/${id}`,{method:"DELETE"}); closeModal();toast("Операция удалена");openClient(CUR_CLIENT.user.id);}
+    catch(e){toast(e.message);}
+  });
+}
+
+function genPassword(){
+  const chars="abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let p="";for(let i=0;i<10;i++)p+=chars[Math.floor(Math.random()*chars.length)];
+  return p;
+}
+function openAddClient(){
+  modal(`<h3>Новый клиент</h3>
+    <div class="field"><label>ФИО</label><input id="nc-fio" placeholder="Иванов Иван Иванович"></div>
+    <div class="grid2">
+      <div class="field"><label>Телефон (для SMS)</label><input id="nc-phone" placeholder="+7 900 000-00-00"></div>
+      <div class="field"><label>Email (логин)</label><input id="nc-email" type="email" placeholder="client@mail.ru"></div>
+    </div>
+    <div class="field"><label>Пароль (выдать клиенту)</label>
+      <div style="display:flex;gap:8px"><input id="nc-pass" placeholder="сгенерируйте или впишите">
+        <button class="btn sm" type="button" id="nc-gen" title="Сгенерировать" style="flex:none">Сгенерировать</button></div></div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal()">Отмена</button>
+      <button class="btn red" id="nc-save">Создать</button></div>`);
+  $("#nc-pass").value=genPassword();
+  $("#nc-gen").addEventListener("click",()=>{$("#nc-pass").value=genPassword();});
+  $("#nc-save").addEventListener("click",async()=>{
+    const fio=$("#nc-fio").value.trim(),phone=$("#nc-phone").value.trim(),email=$("#nc-email").value.trim(),pass=$("#nc-pass").value;
+    if(!fio||!email||!phone||pass.length<6){toast("Заполните ФИО, телефон, email и пароль (от 6 символов)");return;}
+    try{
+      await api("/api/admin/clients",{method:"POST",headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({full_name:fio,phone,email,password:pass})});
+      modal(`<h3>Клиент создан ✓</h3>
+        <div class="k" style="color:var(--text-2);margin-bottom:14px">Передайте клиенту эти данные для входа:</div>
+        <div class="field"><label>Логин (email)</label><input id="cr-email" value="${email}" readonly></div>
+        <div class="field"><label>Пароль</label><input id="cr-pass" value="${pass}" readonly></div>
+        <div class="modal-actions">
+          <button class="btn" id="cr-copy">Скопировать</button>
+          <button class="btn red" onclick="closeModal()">Готово</button></div>`);
+      $("#cr-copy").addEventListener("click",()=>{
+        const txt=`AVTO-hub — вход в личный кабинет\nЛогин: ${email}\nПароль: ${pass}`;
+        navigator.clipboard?.writeText(txt).then(()=>toast("Скопировано"),()=>toast("Скопируйте вручную"));
+      });
+      loadClients();
+    }catch(e){toast(e.message);}
+  });
+}
+
+function openAddCar(ownerId){
+  modal(`<h3>Новый автомобиль</h3>
+    <div class="field"><label>Марка и модель</label><input id="m-mm" placeholder="Toyota Land Cruiser 300"></div>
+    <div class="grid2">
+      <div class="field"><label>Год</label><input id="m-year" type="number" value="2023"></div>
+      <div class="field"><label>Дата покупки</label><input id="m-date" type="date"></div>
+    </div>
+    <div class="field"><label>Номер кузова</label><input id="m-body" placeholder="VJA300W-0000000"></div>
+    <div class="field"><label>Судно (необязательно)</label><input id="m-ship"></div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal()">Отмена</button>
+      <button class="btn red" id="m-save">Добавить</button></div>`);
+  $("#m-date").valueAsDate=new Date();
+  $("#m-save").addEventListener("click",async()=>{
+    const mm=$("#m-mm").value.trim(),body=$("#m-body").value.trim(),year=+$("#m-year").value,date=$("#m-date").value;
+    if(!mm){toast("Укажите марку и модель");return;}
+    if(!body){toast("Укажите номер кузова");return;}
+    if(!year||year<1980||year>2030){toast("Проверьте год выпуска");return;}
+    if(!date){toast("Укажите дату покупки");return;}
+    try{
+      await api("/api/admin/cars",{method:"POST",headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({owner_id:ownerId,make_model:mm,year,
+          body_number:body,purchase_date:date,ship_name:$("#m-ship").value})});
+      closeModal();toast("Автомобиль добавлен");openClient(ownerId);
+    }catch(e){toast(e.message);}
+  });
+}
+
+function openAddTx(userId){
+  modal(`<h3>Операция по балансу</h3>
+    <div class="field"><label>Тип</label><select id="t-dir"><option value="income">Поступление</option><option value="expense">Списание</option></select></div>
+    <div class="field"><label>Наименование</label><input id="t-name" placeholder="Пополнение депозита / Оплата авто"></div>
+    <div class="grid2">
+      <div class="field"><label>Плательщик</label><input id="t-payer"></div>
+      <div class="field"><label>Сумма, ₽</label><input id="t-amt" type="number"></div>
+    </div>
+    <div class="field"><label>Дата</label><input id="t-date" type="date"></div>
+    <div class="modal-actions"><button class="btn" onclick="closeModal()">Отмена</button>
+      <button class="btn red" id="t-save">Добавить</button></div>`);
+  $("#t-date").valueAsDate=new Date();
+  $("#t-save").addEventListener("click",async()=>{
+    const name=$("#t-name").value.trim(),amt=parseFloat($("#t-amt").value),date=$("#t-date").value;
+    if(!name){toast("Укажите наименование операции");return;}
+    if(!amt||amt<=0){toast("Сумма должна быть больше нуля");return;}
+    if(!date){toast("Укажите дату");return;}
+    try{
+      await api("/api/admin/transactions",{method:"POST",headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({user_id:userId,op_date:date,name,
+          payer:$("#t-payer").value,amount:amt,direction:$("#t-dir").value})});
+      closeModal();toast("Операция добавлена");openClient(userId);
+    }catch(e){toast(e.message);}
+  });
+}
+
+async function loadCurrency(){
+  try{
+    const rates=await api("/api/currency");
+    const names={JPY:"Японская иена (JPY)",EUR:"Евро (EUR)"};
+    $("#currency-wrap").innerHTML=`<div class="card"><div class="sec-head"><h2>Курсы валют</h2></div>
+      <div class="k" style="color:var(--text-2);margin-bottom:18px">Эти значения видят все клиенты под логотипом в кабинете.</div>
+      <div class="grid2">${rates.map(r=>`
+        <div class="field"><label>${names[r.code]||r.code} — рублей за единицу</label>
+          <div style="display:flex;gap:10px"><input id="rate-${r.code}" type="number" step="0.01" value="${r.rate}">
+          <button class="btn red" data-code="${r.code}">Сохранить</button></div></div>`).join("")}</div></div>`;
+    $$("#currency-wrap button[data-code]").forEach(btn=>btn.addEventListener("click",async()=>{
+      const code=btn.dataset.code,val=$("#rate-"+code).value;
+      try{ await api("/api/admin/currency/"+code,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify({rate:val})});
+        toast("Курс "+code+" обновлён"); loadRatesSidebar();
+      }catch(e){toast(e.message);}
+    }));
+  }catch(e){$("#currency-wrap").innerHTML='<div class="card"><div class="loading">'+e.message+'</div></div>';}
+}
+
+async function loadDeposit(){
+  try{
+    const d=await api("/api/admin/deposit");
+    $("#deposit-wrap").innerHTML=`<div class="card"><div class="sec-head"><h2>Депозит — QR и текст</h2></div>
+      <div class="k" style="color:var(--text-2);margin-bottom:16px">Это видят клиенты во вкладке «Оплата депозита».</div>
+      <div class="grid2" style="align-items:start">
+        <div class="field"><label>QR-код · Сбербанк</label>
+          <div id="dq-preview" style="width:200px;height:200px;background:#fff;border-radius:12px;display:grid;place-items:center;color:#999;font-size:12px;overflow:hidden">нет QR</div>
+          <input id="dq-file" type="file" accept="image/png,image/jpeg" style="display:none">
+          <button class="btn sm" id="dq-upload" style="margin-top:10px">${d.has_qr?"Заменить QR":"Загрузить QR"}</button>
+        </div>
+        <div class="field"><label>QR-код · Т-банк</label>
+          <div id="dqt-preview" style="width:200px;height:200px;background:#fff;border-radius:12px;display:grid;place-items:center;color:#999;font-size:12px;overflow:hidden">нет QR</div>
+          <input id="dqt-file" type="file" accept="image/png,image/jpeg" style="display:none">
+          <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+            <button class="btn sm" id="dqt-upload">${d.has_qr_tbank?"Заменить QR":"Загрузить QR"}</button>
+            ${d.has_qr_tbank?'<button class="btn sm" id="dqt-del">Удалить</button>':''}
+          </div>
+        </div>
+      </div>
+      <div class="field" style="margin-top:8px"><label>Текст под QR (реквизиты, инструкция)</label>
+        <textarea id="dq-text" rows="7" style="width:100%;resize:vertical">${(d.text||"").replace(/</g,"&lt;")}</textarea>
+        <button class="btn red" id="dq-save" style="margin-top:10px">Сохранить текст</button>
+      </div></div>`;
+    if(d.has_qr){ try{const u=await authBlobURLAdmin("/api/deposit/qr?bank=sber");$("#dq-preview").innerHTML=`<img src="${u}" style="width:100%;height:100%;object-fit:contain">`;}catch(e){} }
+    if(d.has_qr_tbank){ try{const u=await authBlobURLAdmin("/api/deposit/qr?bank=tbank");$("#dqt-preview").innerHTML=`<img src="${u}" style="width:100%;height:100%;object-fit:contain">`;}catch(e){} }
+    $("#dq-upload").addEventListener("click",()=>$("#dq-file").click());
+    $("#dq-file").addEventListener("change",async e=>{
+      const f=e.target.files[0]; e.target.value="";
+      if(!f)return;
+      const fd=new FormData(); fd.append("file",f);
+      try{ await api("/api/admin/deposit/qr?bank=sber",{method:"POST",body:fd}); toast("QR Сбербанк загружен"); loadDeposit(); }
+      catch(err){toast(err.message);}
+    });
+    $("#dqt-upload").addEventListener("click",()=>$("#dqt-file").click());
+    $("#dqt-file").addEventListener("change",async e=>{
+      const f=e.target.files[0]; e.target.value="";
+      if(!f)return;
+      const fd=new FormData(); fd.append("file",f);
+      try{ await api("/api/admin/deposit/qr?bank=tbank",{method:"POST",body:fd}); toast("QR Т-банк загружен"); loadDeposit(); }
+      catch(err){toast(err.message);}
+    });
+    if($("#dqt-del")) $("#dqt-del").addEventListener("click",async()=>{
+      try{ await api("/api/admin/deposit/qr?bank=tbank",{method:"DELETE"}); toast("QR Т-банк удалён"); loadDeposit(); }
+      catch(err){toast(err.message);}
+    });
+    $("#dq-save").addEventListener("click",async()=>{
+      try{ await api("/api/admin/deposit",{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify({text:$("#dq-text").value})}); toast("Текст сохранён"); }
+      catch(err){toast(err.message);}
+    });
+  }catch(e){$("#deposit-wrap").innerHTML='<div class="card"><div class="loading">'+e.message+'</div></div>';}
+}
+
+let tT;function toast(t){const el=$("#toast");el.textContent=t;el.classList.add("show");clearTimeout(tT);tT=setTimeout(()=>el.classList.remove("show"),2800);}
+
+$("#li-btn").addEventListener("click",doLogin);
+$("#li-pass").addEventListener("keydown",e=>{if(e.key==="Enter")doLogin();});
+$("#logout").addEventListener("click",logout);
+$("#logout-top")&&$("#logout-top").addEventListener("click",logout);
+const SUN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
+const MOON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/></svg>';
+function applyTheme(t){document.documentElement.setAttribute("data-theme",t);const b=document.getElementById("theme-btn");if(b)b.innerHTML=(t==="light"?MOON:SUN);}
+function toggleTheme(){const t=document.documentElement.getAttribute("data-theme")==="light"?"dark":"light";localStorage.setItem("avtohub_theme",t);applyTheme(t);}
+applyTheme(localStorage.getItem("avtohub_theme")||"dark");
+document.getElementById("theme-btn").addEventListener("click",toggleTheme);
+
+if(token)boot();else window.location.href="cabinet.html";
+</script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+# Секреты и окружение
+.env
+*.env
+!.env.example
+!backend/.env.example
+
+# База и загрузки (данные, не в репозитории)
+*.db
+*.sqlite3
+backend/uploads/
+uploads/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+alembic_tmp.db
+
+# Прочее
+.DS_Store
+*.log

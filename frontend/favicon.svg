@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="avtobg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#d34a52"/>
+      <stop offset="1" stop-color="#b8353c"/>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="512" height="512" rx="112" ry="112" fill="url(#avtobg)"/>
+  <text x="232" y="368" font-family="Georgia, 'Times New Roman', serif" font-size="360" font-weight="700" font-style="italic" fill="#ffffff" text-anchor="middle">A</text>
+  <text x="388" y="368" font-family="Georgia, 'Times New Roman', serif" font-size="150" font-weight="700" font-style="italic" fill="#ffffff" opacity="0.9" text-anchor="middle">h</text>
+</svg>
